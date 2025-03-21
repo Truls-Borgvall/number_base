@@ -1,18 +1,30 @@
-use super::char::char_to_value;
+use super::char::value_to_char;
 
-/// Implements the successive multiplication algorithm for converting fractional parts.
-/// For a decimal 0.abc in base B, it computes: a*B^(-1) + b*B^(-2) + c*B^(-3)
-pub fn successive_multiplication(decimal_str: &str, from_base: u64) -> f64 {
-    let mut result = 0.0;
-    let base_f = from_base as f64;
-    
-    for (i, c) in decimal_str.chars().enumerate() {
-        let value = char_to_value(c) as f64;
-        let power = -(i as i32 + 1);
-        result += value * base_f.powi(power);
+/// Converts a decimal fractional part (as a string, like "625" for 0.625)
+/// into a fractional string in the target base using successive multiplication.
+pub fn successive_multiplication(decimal_str: &str, to_base: u64, max_digits: usize) -> String {
+    let mut frac: f64 = format!("0.{}", decimal_str).parse().unwrap();
+    println!("{}", frac);
+    let mut result = String::new();
+
+    for _ in 0..max_digits {
+        
+        frac *= to_base as f64;
+        let digit = frac.floor() as u64;
+        result.push(value_to_char(digit));
+        frac -= digit as f64;
+
+        if frac == 0.0 {
+            break;
+        }
+        println!("Frac: {}", frac);
+        println!("Digit: {}", digit);
+        println!("Result: {}", result);
     }
+
     result
 }
+
 
 /// Performs the successive division algorithm to get digits in a target base.
 /// Returns a vector of remainders in reverse order (least significant digit first).
