@@ -75,5 +75,5 @@ impl NumberBase {
 
 fn main() {
     println!("{}", NumberBase::convert_fractional_to_decimal("34", 5)); // 0.76
-    println!("{}", NumberBase::convert_fractional_from_decimal("76", 5)); // 3344444444
+    println!("{}", NumberBase::convert_fractional_from_decimal("76", 5)); // 34
 }
