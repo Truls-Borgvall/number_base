@@ -6,37 +6,37 @@ use helpers::math::{successive_division, successive_multiplication};
 struct NumberBase {
     integer_part: String,
     fractional_part: Option<String>,
-    from_base: u64,
+    base: u64,
 }
 
 impl NumberBase {
-    fn new(number_str: &str, from_base: u64) -> Self {
+    fn new(number_str: &str, base: u64) -> Self {
         let parts: Vec<&str> = number_str.split('.').collect();
         match parts.len() {
             1 => NumberBase {
                 integer_part: parts[0].to_string(),
                 fractional_part: None,
-                from_base,
+                base,
             },
             2 => NumberBase {
                 integer_part: parts[0].to_string(),
                 fractional_part: Some(parts[1].to_string()),
-                from_base,
+                base,
             },
             _ => panic!("Invalid number format"),
         }
     }
 
     // Static conversion methods
-    fn convert_integer_to_decimal(integer_str: &str, from_base: u64) -> u64 {
+    fn convert_integer_to_decimal(integer_str: &str, from_base: u64) -> String {
         let mut result = 0 as u64;
         for c in integer_str.chars() {
             result = result * from_base + char_to_value(c);
         }
-        result
+        result.to_string()
     }
 
-    fn convert_fractional_to_decimal(fractional_str: &str, from_base: u64) -> f64 {
+    fn convert_fractional_to_decimal(fractional_str: &str, from_base: u64) -> String {
         let mut result = 0.0 as f64;
         let mut power = from_base as f64;
 
@@ -45,7 +45,8 @@ impl NumberBase {
             result += digit_value / power;
             power *= from_base as f64;
         }
-        result
+        // Convert to string and remove "0." prefix
+        format!("{:.10}", result).trim_start_matches("0.").to_string()
     }
 
     fn convert_integer_from_decimal(integer_decimal_str: &str, to_base: u64) -> String {
@@ -61,11 +62,11 @@ impl NumberBase {
 
     // Instance method that uses the static conversion methods
     fn convert_to_base(&self, to_base: u64) -> String {
-        let integer_decimal = Self::convert_integer_to_decimal(&self.integer_part, self.from_base);
-        let integer_result = Self::convert_integer_from_decimal(&integer_decimal.to_string(), to_base);
+        let integer_decimal = Self::convert_integer_to_decimal(&self.integer_part, self.base);
+        let integer_result = Self::convert_integer_from_decimal(&integer_decimal, to_base);
         if let Some(fractional_part) = &self.fractional_part {
-            let fractional_decimal = Self::convert_fractional_to_decimal(fractional_part, self.from_base);
-            let fractional_result = Self::convert_fractional_from_decimal(&fractional_decimal.to_string(), to_base);
+            let fractional_decimal = Self::convert_fractional_to_decimal(fractional_part, self.base);
+            let fractional_result = Self::convert_fractional_from_decimal(&fractional_decimal, to_base);
             format!("{}.{}", integer_result, fractional_result)
         } else {
             integer_result
@@ -74,6 +75,6 @@ impl NumberBase {
 }
 
 fn main() {
-    println!("{}", NumberBase::convert_fractional_to_decimal("34", 5)); // 0.76
-    println!("{}", NumberBase::convert_fractional_from_decimal("76", 5)); // 34
+    let number = NumberBase::new("1010.101", 2);
+    println!("{}", number.convert_to_base(10));
 }
