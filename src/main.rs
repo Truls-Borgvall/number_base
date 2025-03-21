@@ -62,10 +62,15 @@ impl NumberBase {
 
     // Instance method that uses the static conversion methods
     fn convert_to_base(&self, to_base: u64) -> String {
+        // Convert integer part to decimal
         let integer_decimal = Self::convert_integer_to_decimal(&self.integer_part, self.base);
+        // Convert decimal integer to new base
         let integer_result = Self::convert_integer_from_decimal(&integer_decimal, to_base);
+
         if let Some(fractional_part) = &self.fractional_part {
+            // Convert fractional part to decimal
             let fractional_decimal = Self::convert_fractional_to_decimal(fractional_part, self.base);
+            // Convert decimal fractional part to new base
             let fractional_result = Self::convert_fractional_from_decimal(&fractional_decimal, to_base);
             format!("{}.{}", integer_result, fractional_result)
         } else {
@@ -75,6 +80,6 @@ impl NumberBase {
 }
 
 fn main() {
-    let number = NumberBase::new("1010.101", 2);
-    println!("{}", number.convert_to_base(10));
+    let number = NumberBase::new("10525.24202", 7);
+    println!("{}", number.convert_to_base(2));
 }
