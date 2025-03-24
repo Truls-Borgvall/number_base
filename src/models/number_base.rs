@@ -3,10 +3,10 @@ use crate::helpers::math::{successive_division, successive_multiplication};
 
 #[derive(Debug)]
 pub struct NumberBase {
-    integer_part: String,
-    fractional_part: Option<String>,
-    is_negative: bool,
-    base: u64,
+    pub integer_part: String,
+    pub fractional_part: Option<String>,
+    pub is_negative: bool,
+    pub base: u64,
 }
 
 impl NumberBase {
