@@ -5,19 +5,29 @@ use crate::helpers::math::{successive_division, successive_multiplication};
 pub struct NumberBase {
     integer_part: String,
     fractional_part: Option<String>,
+    is_negative: bool,
     base: u64,
 }
 
 impl NumberBase {
     pub fn new(number_str: &str, base: u64) -> Self {
+        let is_negative = number_str.starts_with('-');
+        let number_str = if is_negative {
+            &number_str[1..]
+        } else {
+            number_str
+        };
+
         let parts: Vec<&str> = number_str.split('.').collect();
         match parts.len() {
             1 => NumberBase {
+                is_negative,
                 integer_part: parts[0].to_string(),
                 fractional_part: None,
                 base,
             },
             2 => NumberBase {
+                is_negative,
                 integer_part: parts[0].to_string(),
                 fractional_part: Some(parts[1].to_string()),
                 base,
@@ -66,7 +76,7 @@ impl NumberBase {
         // Convert decimal integer to new base
         let integer_result = Self::convert_integer_from_decimal(&integer_decimal, to_base);
 
-        if let Some(fractional_part) = &self.fractional_part {
+        let mut result = if let Some(fractional_part) = &self.fractional_part {
             // Convert fractional part to decimal
             let fractional_decimal = Self::convert_fractional_to_decimal(fractional_part, self.base);
             // Convert decimal fractional part to new base
@@ -74,6 +84,11 @@ impl NumberBase {
             format!("{}.{}", integer_result, fractional_result)
         } else {
             integer_result
+        };
+
+        if self.is_negative {
+            result.insert(0, '-');
         }
+        result
     }
 }
