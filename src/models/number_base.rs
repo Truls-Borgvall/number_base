@@ -38,11 +38,16 @@ impl NumberBase {
 
     // Static conversion methods
     fn convert_integer_to_decimal(integer_str: &str, from_base: u64) -> String {
-        let mut result = 0 as u64;
-        for c in integer_str.chars() {
-            result = result * from_base + char_to_value(c);
+        let mut sum = 0u64;
+        let chars: Vec<char> = integer_str.chars().collect();
+        
+        for (i, &c) in chars.iter().rev().enumerate() {
+            let digit_value = char_to_value(c);
+            let power = from_base.pow(i as u32);
+            sum += digit_value * power;
         }
-        result.to_string()
+        
+        sum.to_string()
     }
 
     fn convert_fractional_to_decimal(fractional_str: &str, from_base: u64) -> String {
@@ -55,7 +60,7 @@ impl NumberBase {
             power *= from_base as f64;
         }
         // Convert to string and remove "0." prefix
-        format!("{:.10}", result).trim_start_matches("0.").to_string()
+        format!("{:.3}", result).trim_start_matches("0.").to_string()
     }
 
     fn convert_integer_from_decimal(integer_decimal_str: &str, to_base: u64) -> String {
@@ -66,19 +71,21 @@ impl NumberBase {
 
     fn convert_fractional_from_decimal(fractional_decimal_str: &str, to_base: u64) -> String {
         // Use successive multiplication with max 10 digits of precision
-        successive_multiplication(fractional_decimal_str, to_base, 10)
+        successive_multiplication(fractional_decimal_str, to_base, 5)
     }
 
     // Instance method that uses the static conversion methods
     pub fn convert_to_base(&self, to_base: u64) -> String {
         // Convert integer part to decimal
         let integer_decimal = Self::convert_integer_to_decimal(&self.integer_part, self.base);
+        println!("integer_decimal: {}", integer_decimal);
         // Convert decimal integer to new base
         let integer_result = Self::convert_integer_from_decimal(&integer_decimal, to_base);
 
         let mut result = if let Some(fractional_part) = &self.fractional_part {
             // Convert fractional part to decimal
             let fractional_decimal = Self::convert_fractional_to_decimal(fractional_part, self.base);
+            println!("fractional_decimal: {}", fractional_decimal);
             // Convert decimal fractional part to new base
             let fractional_result = Self::convert_fractional_from_decimal(&fractional_decimal, to_base);
             format!("{}.{}", integer_result, fractional_result)
