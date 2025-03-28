@@ -12,7 +12,7 @@ fn main() {
     let new_base = 16;
     let converted_number = number.convert_to_base(new_base);
 
-    println!("{}{}.{} in base {} is {} in base {}", 
+    println!("{}{}.{} i bas {} är {} i bas {}", 
         if number.is_negative { "-" } else { "" },
         integer_part, 
         fractional_part, 
