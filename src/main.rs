@@ -1,23 +1,27 @@
 mod helpers;
 mod models;
 
-use crate::models::number_base::NumberBase;
+use crate::helpers::io::{get_user_input, InputError};
 
 fn main() {
-    let number = NumberBase::new("-221.201", 3);
-    let base = number.base;
-    let integer_part = number.integer_part.clone();
-    let fractional_part = number.fractional_part.clone().unwrap_or_default();
-
-    let new_base = 16;
-    let converted_number = number.convert_to_base(new_base);
-
-    println!("{}{}.{} i bas {} är {} i bas {}", 
-        if number.is_negative { "-" } else { "" },
-        integer_part, 
-        fractional_part, 
-        base, 
-        converted_number, 
-        new_base
-    );
+    match get_user_input() {
+        Ok((number, new_base)) => {
+            let converted_number = number.convert_to_base(new_base);
+            println!("{}{}.{} i bas {} är {} i bas {}", 
+                if number.is_negative { "-" } else { "" },
+                number.integer_part, 
+                number.fractional_part.unwrap_or_default(), 
+                number.base, 
+                converted_number, 
+                new_base
+            );
+        }
+        Err(e) => {
+            match e {
+                InputError::InvalidNumber(msg) => println!("Fel: {}", msg),
+                InputError::InvalidBase(msg) => println!("Fel: {}", msg),
+                InputError::ParseError(msg) => println!("Fel: {}", msg),
+            }
+        }
+    }
 }
